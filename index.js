@@ -28,8 +28,19 @@ app.get('/', function(req, res) {
 app.post('/api/shorturl', function(req, res) {
   console.log(req.body);
   const url = req.body.url;
+
+  // test invalid url using regex
+  const regex_url_pattern = /^(http|https)(:\/\/)/;
+  if(!regex_url_pattern.test(url)) {
+    return res.json({
+      error: "invalid url"
+    });
+  }
+
   const dnslookup = dns.lookup(url_parser.parse(url).hostname, async function(err, address) {
-    if(err) res.json({ error: 'invalid url' });
+    if(err) {
+      res.json({ error: 'invalid url' })
+    }
     else {
       const url_counter = await collection.countDocuments({});
       const url_document = {
